@@ -8,6 +8,40 @@ d3.queue()
       if (error) throw error;
       var yearObj = formatAllData(data);
 
+      // sometimes data needs to be formatted accross rows or accross files - a formatter callback only tackles one row
+
+      function formatAllData(data) {
+        var yearObj = {};
+        data.forEach(function(arr) {
+          // get the indicator and format the key
+          var indicator = arr[0].indicator.split(" ")[0].replace(",","").toLowerCase();
+          arr.forEach(function(obj) {
+            // get current region
+            var region = obj.region;
+            // parse through every year, add that region's data to that year array
+            for (var year in obj) {
+              if (parseInt(year)) {
+                if (!yearObj[year]) yearObj[year] = [];
+                var yearArr = yearObj[year];
+                var regionObj = yearArr.find(el => el.region === region);
+                if (regionObj) regionObj[indicator] = obj[year];
+                else {
+                  var newObj = {region: region};
+                  newObj[indicator] = obj[year];
+                  yearArr.push(newObj);
+                }
+              }
+            }
+          })
+        });
+        // remove years that don't have complete data sets for any region
+        for (var year in yearObj) {
+          yearObj[year] = yearObj[year].filter(validRegion);
+          if (yearObj[year].length === 0) delete yearObj[year];
+        }
+        return yearObj;
+      }
+
       console.log(data);
   })
 
@@ -60,4 +94,13 @@ d3.queue()
       "Upper middle income",
       "World"
     ];
+    var obj = {
+      region: row["Country Name"],
+      indicator: row["Indicator Name"]
+    }
+    if (invalidRows.indexOf(obj.region) > -1) return;
+    for (var key in row) {
+      if (parseInt(key)) obj[key] = +row[key] || null;
+    }
+    return obj;
   }
