@@ -6,6 +6,7 @@ d3.queue()
   .defer(d3.csv, '/data/urban_population/API_SP.URB.TOTL_DS2_en_csv_v2.csv', formatter)
   .awaitAll(function(error, data){
       if (error) throw error;
+
       var width = 700;
       var height = 700;
       var padding = 100;
@@ -51,7 +52,62 @@ d3.queue()
         .property('value', yearRange[0])
         .on('input', () => drawPlot(+d3.event.target.value))
 
-      drawPlot(yearRange[0])
+      drawPlot(yearRange[0]);
+
+      function drawPlot(year){
+        var data = yearObj[year];
+        var xScale = d3.scaleLinear()
+                        .domain(d3.extent(data, d => d.co2 / d.population))
+                        .range([padding, width - padding]);
+        var yScale = d3.scaleLinear()
+                        .domain(d3.extent(data, d => d.methane / d.population))
+                        .range([height - padding, padding]);
+
+        var fScale = d3.scaleLinear()
+                      .domain([0, 100])
+                      .range(['black', 'green']);
+
+        var rScale = d3.scaleLinear()
+                      .domain([0, 1])
+                      .range([5, 30]);
+
+        d3.select('.x-axis')
+          .call(d3.axisBottom(xScale));
+        
+        d3.select('.y-axis')
+          .call(d3.axisLeft(yScale));
+
+        d3.select('.title')
+          .text('Methane vs. CO2 emissions per capita (' + year + ')');
+
+        //GENERAL UPDATE PATTERN
+
+        var update = svg.selectAll('circle')
+                        .data(data, d => d.region);
+        
+        update  
+          .exit()
+          .transition()
+            .duration(500)
+            .attr('r', 0)
+          .remove();
+
+        update
+          .enter()
+          .append('circle')
+            .attr('cx', d => xScale(d.co2 / d.population))
+            .attr('cy', d => yScale(d.methane / d.population))
+            .attr('stroke', 'white')
+            .attr('stroke-width', 1)
+          .merge(update)
+            .transition()
+            .duration(500)
+            .delay((d, i) => i * 5)
+              .attr('cx', d => xScale(d.co2 / d.population))
+              .attr('cy', d => yScale(d.methane / d.population))
+              .attr('fill', d => fScale(d.renewable))
+              .attr('r', d => rScale(d.urban / d.population));
+      }
 
       // sometimes data needs to be formatted accross rows or accross files - a formatter callback only tackles one row
 
