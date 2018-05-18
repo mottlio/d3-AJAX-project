@@ -12,6 +12,35 @@ d3.queue()
       var yearObj = formatAllData(data);
       var yearRange = d3.extent(Object.keys(yearObj)).map(year => +year ); //establishes min and max of the year property converted from string to integer
 
+      var svg = d3.select("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+      
+      svg.append("g")
+            .attr("transform", "translate(0" + (width - padding + 30) + ")")
+            .classed("x-axis", true);
+
+      svg.append("g")
+            .attr("transform", "translate(" + (padding - 30) + ",0)")
+            .classed("y-axis", true);
+
+      svg.append("text")
+          .text("CO2 Emissions (kt per person)")
+          .attr("x", width / 2)
+          .attr("y", height)
+          .attr("dy", "-1.5em")
+          .attr("text-anchor", "middle");
+
+      svg.append("text")
+          .text("Methane Emissions (kt of C02 equivalent per person)")
+          .attr("transform", "rotate(-90)")
+          .attr("x", - width / 2)
+          .attr("y", "1.5em")
+          .attr("text-anchor", "middle");
+
+      svg.append("text")
+        
+
       // sometimes data needs to be formatted accross rows or accross files - a formatter callback only tackles one row
 
       function formatAllData(data) {
