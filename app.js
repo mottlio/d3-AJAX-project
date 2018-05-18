@@ -6,7 +6,11 @@ d3.queue()
   .defer(d3.csv, '/data/urban_population/API_SP.URB.TOTL_DS2_en_csv_v2.csv', formatter)
   .awaitAll(function(error, data){
       if (error) throw error;
+      var width = 700;
+      var height = 700;
+      var padding = 100;
       var yearObj = formatAllData(data);
+      var yearRange = d3.extent(Object.keys(yearObj)).map(year => +year ); //establishes min and max of the year property converted from string to integer
 
       // sometimes data needs to be formatted accross rows or accross files - a formatter callback only tackles one row
 
@@ -42,8 +46,15 @@ d3.queue()
         return yearObj;
       }
 
+      function validRegion(d) {
+        for (var key in d) {
+          if (d[key] === null) return false;
+        }
+        return true;
+      }
       console.log(data);
-  })
+      console.log(yearObj);
+  });
 
   function formatter(row) {
     var invalidRows = [
