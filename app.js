@@ -39,7 +39,19 @@ d3.queue()
           .attr("text-anchor", "middle");
 
       svg.append("text")
-        
+          .attr("x", width / 2)
+          .attr('y', '2em')
+          .attr('text-anchor', 'middle')
+          .style('font-size', '1.5em')
+          .classed('title', true);
+
+      d3.select('input')
+        .property('min', yearRange[0])
+        .property('max', yearRange[1])
+        .property('value', yearRange[0])
+        .on('input', () => drawPlot(+d3.event.target.value))
+
+      drawPlot(yearRange[0])
 
       // sometimes data needs to be formatted accross rows or accross files - a formatter callback only tackles one row
 
