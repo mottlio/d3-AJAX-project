@@ -1,3 +1,7 @@
+Project url:
+
+https://mottlio.github.io/d3-AJAX-project/
+
 Project elements:
 
 - Obtain data from World Bank website.
