@@ -126,6 +126,11 @@ d3.queue()
             `)
       }
 
+      function hideTooltip(d){
+        d3.select('.tooltip')
+              .style('opacity', 0);
+      }
+
       // sometimes data needs to be formatted accross rows or accross files - a formatter callback only tackles one row
 
       function formatAllData(data) {
