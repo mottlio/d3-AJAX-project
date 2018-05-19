@@ -99,6 +99,8 @@ d3.queue()
             .attr('cy', d => yScale(d.methane / d.population))
             .attr('stroke', 'white')
             .attr('stroke-width', 1)
+            .on('mousemove touchmove', showTooltip)
+            .on('mouseout touchmove', hideTooltip)
           .merge(update)
             .transition()
             .duration(500)
@@ -107,6 +109,21 @@ d3.queue()
               .attr('cy', d => yScale(d.methane / d.population))
               .attr('fill', d => fScale(d.renewable))
               .attr('r', d => rScale(d.urban / d.population));
+      }
+
+      function showTooltip(d){
+        var tooltip = d3.select('.tooltip');
+        tooltip 
+            .style('opacity', 1)
+            .style('left', (d3.event.pageX - tooltip.node().offsetWidth / 2) + "px")
+            .style('top', (d3.event.pageY - tooltip.node().offsetHeight - 10) + "px")
+            .html(`
+              <p>Region: ${d.region}</p>
+              <p>Methane per capita: ${(d.methane / d.population).toFixed(4)}</p>
+              <p>CO2 per capita: ${(d.co2 / d.population).toFixed(4)}</p>
+              <p>Renewable energy: ${d.renewable.toFixed(2)}%</p>
+              <p>Urban population: ${(d.urban / d.population * 100).toFixed(2)}%</p>
+            `)
       }
 
       // sometimes data needs to be formatted accross rows or accross files - a formatter callback only tackles one row
